@@ -1,35 +1,3 @@
-//function loadStoredChats() {
-//    chrome.storage.session.get("chats", (data) => {
-//        const messages = data.chats || [];
-//        const messagesDiv = document.getElementById("response");
-//
-//        messagesDiv.innerHTML = "";
-//
-//        messages.forEach(({ type, message }) => {
-//            const messageDiv = document.createElement("div");
-//            messageDiv.textContent = message;
-//            messageDiv.classList.add(type === "user" ? "user-chat" : "bot-chat");
-//            messagesDiv.appendChild(messageDiv);
-//        });
-//
-//        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-//    });
-//    //chrome.storage.session.clear(() => {
-//    //if (chrome.runtime.lastError) {
-//    //    console.error("Error clearing session storage: ", chrome.runtime.lastError);
-//    //} else {
-//    //    console.log("Session storage cleared successfully.");
-//    //}
-//    //});
-//}
-//
-//function saveMessageToStorage(type, message) {
-//    chrome.storage.session.get("chats", (data) => {
-//        const chats = data.chats || [];
-//        chats.push({ type, message }); 
-//        chrome.storage.session.set({ chats });
-//    });
-//}
 function getTabId(callback) {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         const tabId = tabs[0].id;

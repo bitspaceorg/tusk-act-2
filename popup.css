@@ -259,4 +259,17 @@
       font-weight: 400;
       line-height: 30px;
     }
+    #sign-in{
+      width : 30%;
+      text-align : center;
+      align-items : center;
+      padding : auto;
+    }
+    #button-flex{
+      display : flex;
+      align-items : center;  
+      justify-content:center;
+    }
+
+
 
