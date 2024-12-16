@@ -6,6 +6,14 @@ function getTabId(callback) {
 }
 
 let chatDataRepo = [];
+let userData = null;
+
+function buildUser() {
+	const usernameDiv = document.getElementById("username");
+	if (userData) {
+		usernameDiv.innerText = userData["displayName"];
+	}
+}
 
 function buildChats() {
 	const messagesDiv = document.getElementById("response");
@@ -26,9 +34,7 @@ function buildChats() {
 function loadChats() {
 	getTabId((tabId) => {
 		chrome.runtime.sendMessage({ action: "getChat", tabId }, res => {
-			console.log(res);
-			chatDataRepo = res || [];
-			buildChats();
+			chatDataRepo = res || []; buildChats();
 		});
 	})
 }
@@ -49,11 +55,11 @@ document.getElementById("send-button").addEventListener("click", () => {
 });
 
 document.getElementById("user-input").addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-        const userInput = document.getElementById("user-input").value.trim();
-        storeChats("user", userInput);
-        storeChats("bot", "hello world!!!");
-    }
+	if (event.key === "Enter") {
+		const userInput = document.getElementById("user-input").value.trim();
+		storeChats("user", userInput);
+		storeChats("bot", "hello world!!!");
+	}
 });
 
 
@@ -61,4 +67,13 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 	chrome.storage.session.remove(String(tabId));
 });
 
-document.addEventListener("DOMContentLoaded", loadChats);
+document.addEventListener("DOMContentLoaded", () => {
+	chrome.runtime.sendMessage({ action: "getUser" }, res => {
+		console.log(res);
+		if (res.status) {
+			userData = res.data;
+			loadChats();
+			buildUser();
+		}
+	});
+});

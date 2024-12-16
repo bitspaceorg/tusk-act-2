@@ -62,7 +62,7 @@
 	  background: #fdf9f9;
     }
 
-    button {
+ 	button {
       border: none;
       display: flex;
       padding: 0.75rem 1.5rem;
@@ -73,9 +73,11 @@
       font-weight: 700;
       text-align: center;
       cursor: pointer;
-      text-transform: uppercase;
       vertical-align: middle;
       align-items: center;
+      justify-content: center;
+	  display: flex;
+	  flex-direction: column;
       border-radius: 0.9rem;
       user-select: none;
       gap: 0.75rem;
@@ -261,16 +263,28 @@
       line-height: 30px;
     }
     #sign-in{
-      width : 30%;
+      width : 35%;
       text-align : center;
       align-items : center;
-      padding : auto;
+	  border-radius: 2px;
+	  background: #00487f;
+    }
+    #sign-in-span{
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+	  	gap: 10px;
     }
     #button-flex{
       display : flex;
       align-items : center;  
       justify-content:center;
+	  margin-top: 40px;
     }
 
+	#ms-logo-login {
+		width: 25px;
+	}
 
 

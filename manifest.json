@@ -3,10 +3,14 @@
   "name": "TUSK",
   "version": "1.0",
   "description": "TUSK an extension",
-  "permissions" : ["storage", "tabs", "scripting", "activeTab"],
+  "permissions" : ["storage", "tabs", "scripting", "activeTab", "identity"],
   "background": {
     "service_worker": "background.js"
   },
+  "host_permissions": [
+	  "https://*.microsoft.com/*",
+	  "https://*.microsoftonline.com/*"
+  ],
   "action": {
       "default_popup": "login.html",
       "default_icon": {
