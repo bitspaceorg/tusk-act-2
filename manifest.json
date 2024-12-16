@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "TUSK",
+  "version": "1.0",
+  "description": "TUSK an extension",
+  "permissions" : ["storage" ,"tabs" ,  "scripting" , "activeTab"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+          "16": "./assets/TUSK.png",
+          "48": "./assets/TUSK.png",
+          "128":"./assets/TUSK.png"
+      }
+  }
+}
