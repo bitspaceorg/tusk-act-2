@@ -5,6 +5,7 @@ chrome.runtime.onInstalled.addListener(() => {
 async function authenticate() {
 	try {
 		const redirectURL = chrome.identity.getRedirectURL();
+		console.log(redirectURL);
 		const clientId = 'd06ea59b-4524-4cfb-bb39-ec53fa9581de';
 		const authURL =
 			`https://login.microsoftonline.com/common/oauth2/v2.0/authorize` +
