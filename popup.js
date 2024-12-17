@@ -11,6 +11,7 @@ let userData = null;
 function buildUser() {
 	const usernameDiv = document.getElementById("username");
 	if (userData) {
+    console.log(userData);
 		usernameDiv.innerText = userData["displayName"];
 	}
 }
