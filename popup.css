@@ -9,11 +9,11 @@ body {
 #chat-container {
   display: flex;
   flex-direction: column;
-  height: 600px;
-  width: 700px;
   gap: 20px;
+  height: 100vh;
   padding: 40px;
 }
+
 #messages {
   flex-grow: 1;
   overflow-y: auto;
@@ -38,7 +38,6 @@ body {
   );
   backdrop-filter: blur(2px);
   height: 30px;
-  width: 50%;
   margin-left: auto;
   margin-right: auto;
   outline: none;
@@ -153,6 +152,7 @@ button svg {
   font-style: normal;
   font-weight: 400;
   line-height: 25px;
+  word-break: break-all;
 }
 
 .bot-chat {
@@ -188,6 +188,7 @@ button svg {
   font-weight: 400;
   line-height: 25px;
   margin-left: auto;
+  word-break: break-all;
 }
 #bottom {
   min-height: 1px;
@@ -261,9 +262,12 @@ button svg {
   font-style: normal;
   font-weight: 400;
   line-height: 30px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 #sign-in {
-  width: 35%;
+  width: 250px;
   text-align: center;
   align-items: center;
   border-radius: 2px;
@@ -311,7 +315,8 @@ button svg {
   padding: 24px;
   justify-content: space-between;
   align-items: center;
-  align-self: stretch;border-radius: 16px 16px 0px 0px;
+  align-self: stretch;
+  border-radius: 16px 16px 0px 0px;
   flex-shrink: 0;
   text-align: center;
   font-feature-settings:
@@ -334,7 +339,7 @@ button svg {
   align-items: flex-start;
   gap: 10px;
   align-self: stretch;
-  font-family:"DM-Sans";
+  font-family: "DM-Sans";
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
@@ -348,7 +353,7 @@ button svg {
   gap: 8px;
   flex: 1 0 0;
   align-self: stretch;
-  font-family:"DM-Sans";
+  font-family: "DM-Sans";
 }
 .sidebar-up-elements {
   display: flex;
@@ -357,6 +362,18 @@ button svg {
   gap: 1px;
   align-self: stretch;
   border-radius: 4px;
-  border: 1px solid #E0E0E0;
-  background: #F5F5F5;
+  border: 1px solid #e0e0e0;
+  background: #f5f5f5;
+}
+@media screen and (min-width: 600px) {
+  #input-container {
+    width: 430px;
+  }
+}
+@media screen and (min-width: 900px) {
+  #response {
+    width: 800px;
+    margin-right: auto;
+    margin-left: auto;
+  }
 }

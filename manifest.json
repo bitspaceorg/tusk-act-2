@@ -3,7 +3,7 @@
   "name": "TUSK",
   "version": "1.0",
   "description": "TUSK an extension",
-  "permissions" : ["storage", "tabs", "scripting", "activeTab", "identity"],
+  "permissions" : ["storage", "tabs", "scripting", "activeTab", "identity" , "sidePanel"],
   "background": {
     "service_worker": "background.js"
   },
@@ -13,11 +13,13 @@
   ],
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqp13UvclpJceluW8yuy4+wSnkLhMe8hVlsekFA5/1zZoyUM9jo0nwrcPp2AS/7CEa7tE2iCaqa+GOowgpJkna7zF/hqQwuSWm3UalNvrJCpeDfyZTSxKW7PoFdnRWBejioU9HY6sIIIJobPysn8bosnIkjcotz2O0TvTMi7Gtd0zy2II0FGdcU2Q/3dpvurawD+q9W1Gm2IgB3HNTpVlEY0PrrsSOe9IDpwTglrovTVJg/gPivvUjNBeLg6gWE0Cz4qpg+xxf+maxiuGiLe9HGG5CAboqYIahVcU2pg/v3qDeY0P8RIA+k9ne0TUZlpQ6qT/MCBKwVBJ3XCZzxzg/QIDAQAB",
   "action": {
-      "default_popup": "login.html",
       "default_icon": {
           "16": "./assets/TUSK.png",
           "48": "./assets/TUSK.png",
           "128":"./assets/TUSK.png"
       }
+  }
+  ,"side_panel" : {
+    "default_path" : "login.html" 
   }
 }

@@ -12,7 +12,7 @@ function buildUser() {
 	const usernameDiv = document.getElementById("username");
 	if (userData) {
     console.log(userData);
-		usernameDiv.innerText = userData["displayName"];
+		//usernameDiv.innerText = userData["displayName"];
 	}
 }
 
@@ -53,6 +53,7 @@ document.getElementById("send-button").addEventListener("click", () => {
 	const userInput = document.getElementById("user-input").value.trim();
 	storeChats("user", userInput);
 	storeChats("bot", "hello world!!!");
+  document.getElementById("user-input").value = "";
 });
 
 document.getElementById("user-input").addEventListener("keydown", (event) => {
@@ -60,6 +61,7 @@ document.getElementById("user-input").addEventListener("keydown", (event) => {
 		const userInput = document.getElementById("user-input").value.trim();
 		storeChats("user", userInput);
 		storeChats("bot", "hello world!!!");
+    document.getElementById("user-input").value = "";
 	}
 });
 
