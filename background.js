@@ -124,11 +124,10 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 		console.log(`Session data cleared for Tab ID: ${tabId}`);
 	});
 });
-/// Initialize storage if not exists
 chrome.runtime.onInstalled.addListener(() => {
     chrome.storage.local.set({
         whitelist: [],
-        blacklist: [],
+        blacklist: ["chrome://extensions" , "https://medium.com"],
         isWhitelistModeOn: false
     }, () => {
         console.log('Initial storage setup complete');
@@ -225,6 +224,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 });
             });
             break;
+        case "checkBlacklist":
+      chrome.storage.local.get("blacklist", (result) => {
+        const blacklist = result.blacklist || [];
+        const isBlacklisted = blacklist.some((blockedUrl) =>
+          message.url.includes(blockedUrl)
+        );
+        sendResponse({ isBlacklisted });
+      });
+      // Required to return true for asynchronous response
+      return true;
         default:
             console.warn("Unknown action:", message.action);
             sendResponse({ status: false, message: "Unknown action" });
@@ -232,3 +241,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     return true;
 });
+//const GOOGLE_ORIGIN = 'https://www.google.com';
+//
+//chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
+//  if (!tab.url) return;
+//  const url = new URL(tab.url);
+//  // Enables the side panel on google.com
+//  if (url.origin === GOOGLE_ORIGIN) {
+//    await chrome.sidePanel.setOptions({
+//      tabId,
+//      path: 'options.html',
+//      enabled: true
+//    });
+//  } else {
+//    // Disables the side panel on all other sites
+//    await chrome.sidePanel.setOptions({
+//      tabId,
+//      enabled: false
+//    });
+//  }
+//});
