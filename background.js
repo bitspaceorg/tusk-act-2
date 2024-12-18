@@ -124,87 +124,111 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 		console.log(`Session data cleared for Tab ID: ${tabId}`);
 	});
 });
-///// Initialize storage if not exists
-//chrome.runtime.onInstalled.addListener(() => {
-//    chrome.storage.session.set({
-//        whitelist: [],
-//        blacklist: [],
-//        isWhitelistModeOn: false
-//    }, () => {
-//        console.log('Initial storage setup complete');
-//    });
-//});
-//
-//chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-//    switch (message.action) {
-//        case 'addToWhitelist':
-//            chrome.storage.session.get('whitelist', (result) => {
-//                const whitelist = result.whitelist || [];
-//                console.log('Current whitelist:', whitelist);
-//
-//                if (!whitelist.includes(message.website)) {
-//                    whitelist.push(message.website);
-//                    chrome.storage.session.set({ whitelist }, () => {
-//                        console.log('Added to whitelist:', message.website);
-//                        console.log('Updated whitelist:', whitelist);
-//                        sendResponse({ status: true });
-//                    });
-//                }
-//            });
-//            break;
-//
-//        case 'addToBlacklist':
-//            chrome.storage.session.get('blacklist', (result) => {
-//                const blacklist = result.blacklist || [];
-//                console.log('Current blacklist:', blacklist);
-//
-//                if (!blacklist.includes(message.website)) {
-//                    blacklist.push(message.website);
-//                    chrome.storage.session.set({ blacklist }, () => {
-//                        console.log('Added to blacklist:', message.website);
-//                        console.log('Updated blacklist:', blacklist);
-//                        sendResponse({ status: true });
-//                    });
-//                }
-//            });
-//            break;
-//
-//        case 'getWhitelist':
-//            chrome.storage.session.get('whitelist', (result) => {
-//                console.log('Retrieving whitelist:', result.whitelist);
-//                sendResponse({ whitelist: result.whitelist || [] });
-//            });
-//            break;
-//
-//        case 'getBlacklist':
-//            chrome.storage.session.get('blacklist', (result) => {
-//                console.log('Retrieving blacklist:', result.blacklist);
-//                sendResponse({ blacklist: result.blacklist || [] });
-//            });
-//            break;
-//
-//        case 'storeWhitelistMode':
-//            chrome.storage.session.set({ 
-//                isWhitelistModeOn: message.isWhitelistModeOn 
-//            }, () => {
-//                console.log('Whitelist mode set to:', message.isWhitelistModeOn);
-//                sendResponse({ status: true });
-//            });
-//            break;
-//
-//        case 'getWhitelistMode':
-//            chrome.storage.session.get('isWhitelistModeOn', (result) => {
-//                console.log('Retrieved whitelist mode:', result.isWhitelistModeOn);
-//                sendResponse({ 
-//                    isWhitelistModeOn: result.isWhitelistModeOn || false 
-//                });
-//            });
-//            break;
-//
-//        default:
-//            console.warn("Unknown action:", message.action);
-//            sendResponse({ status: false, message: "Unknown action" });
-//            break;
-//    }
-//    return true;
-//});
+/// Initialize storage if not exists
+chrome.runtime.onInstalled.addListener(() => {
+    chrome.storage.local.set({
+        whitelist: [],
+        blacklist: [],
+        isWhitelistModeOn: false
+    }, () => {
+        console.log('Initial storage setup complete');
+    });
+});
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    switch (message.action) {
+        case 'addToWhitelist':
+            chrome.storage.local.get('whitelist', (result) => {
+                const whitelist = result.whitelist || [];
+                console.log('Current whitelist:', whitelist);
+                if (!whitelist.includes(message.website)) {
+                    whitelist.push(message.website);
+                    chrome.storage.local.set({ whitelist }, () => {
+                        console.log('Added to whitelist:', message.website);
+                        console.log('Updated whitelist:', whitelist);
+                        sendResponse({ status: true });
+                    });
+                }
+            });
+            break;
+        case 'addToBlacklist':
+            chrome.storage.local.get('blacklist', (result) => {
+                const blacklist = result.blacklist || [];
+                console.log('Current blacklist:', blacklist);
+                if (!blacklist.includes(message.website)) {
+                    blacklist.push(message.website);
+                    chrome.storage.local.set({ blacklist }, () => {
+                        console.log('Added to blacklist:', message.website);
+                        console.log('Updated blacklist:', blacklist);
+                        sendResponse({ status: true });
+                    });
+                }
+            });
+            break;
+        case 'removeFromWhitelist':
+            chrome.storage.local.get('whitelist', (result) => {
+                const whitelist = result.whitelist || [];
+                console.log('Current whitelist:', whitelist);
+                const updatedWhitelist = whitelist.filter(site => site !== message.website);
+                
+                chrome.storage.local.set({ whitelist: updatedWhitelist }, () => {
+                    console.log('Removed from whitelist:', message.website);
+                    console.log('Updated whitelist:', updatedWhitelist);
+                    sendResponse({ 
+                        status: true, 
+                        whitelist: updatedWhitelist 
+                    });
+                });
+            });
+            break;
+        case 'removeFromBlacklist':
+            chrome.storage.local.get('blacklist', (result) => {
+                const blacklist = result.blacklist || [];
+                console.log('Current blacklist:', blacklist);
+                const updatedBlacklist = blacklist.filter(site => site !== message.website);
+                
+                chrome.storage.local.set({ blacklist: updatedBlacklist }, () => {
+                    console.log('Removed from blacklist:', message.website);
+                    console.log('Updated blacklist:', updatedBlacklist);
+                    sendResponse({ 
+                        status: true, 
+                        blacklist: updatedBlacklist 
+                    });
+                });
+            });
+            break;
+        case 'getWhitelist':
+            chrome.storage.local.get('whitelist', (result) => {
+                console.log('Retrieving whitelist:', result.whitelist);
+                sendResponse({ whitelist: result.whitelist || [] });
+            });
+            break;
+        case 'getBlacklist':
+            chrome.storage.local.get('blacklist', (result) => {
+                console.log('Retrieving blacklist:', result.blacklist);
+                sendResponse({ blacklist: result.blacklist || [] });
+            });
+            break;
+        case 'storeWhitelistMode':
+            chrome.storage.local.set({ 
+                isWhitelistModeOn: message.isWhitelistModeOn 
+            }, () => {
+                console.log('Whitelist mode set to:', message.isWhitelistModeOn);
+                sendResponse({ status: true });
+            });
+            break;
+        case 'getWhitelistMode':
+            chrome.storage.local.get('isWhitelistModeOn', (result) => {
+                console.log('Retrieved whitelist mode:', result.isWhitelistModeOn);
+                sendResponse({ 
+                    isWhitelistModeOn: result.isWhitelistModeOn || false 
+                });
+            });
+            break;
+        default:
+            console.warn("Unknown action:", message.action);
+            sendResponse({ status: false, message: "Unknown action" });
+            break;
+    }
+    return true;
+});

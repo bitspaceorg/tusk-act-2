@@ -12,7 +12,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "getHTML") {
     // Extract the full HTML content of the page
-    console.log(pageContent)
     sendResponse({ html: document.documentElement.outerHTML });
   }
 });
