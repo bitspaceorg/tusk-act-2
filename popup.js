@@ -32,21 +32,20 @@ function buildChats() {
 	messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
+const CHAT_STORAGE_KEY = "sessionChatData";
+
 function loadChats() {
-	getTabId((tabId) => {
-		chrome.runtime.sendMessage({ action: "getChat", tabId }, res => {
-			chatDataRepo = res || []; buildChats();
-		});
-	})
+  chrome.storage.session.get(CHAT_STORAGE_KEY, (result) => {
+    chatDataRepo = result[CHAT_STORAGE_KEY] || []; 
+    buildChats(); 
+  });
 }
 
 function storeChats(type, message) {
-	chatDataRepo = [...chatDataRepo, { type, message }];
-	getTabId((tabId) => {
-		chrome.runtime.sendMessage({ action: "storeChat", chatDataRepo, tabId }, _ => {
-			buildChats();
-		})
-	})
+  chatDataRepo = [...chatDataRepo, { type, message }]; 
+  chrome.storage.session.set({ [CHAT_STORAGE_KEY]: chatDataRepo }, () => {
+    buildChats();
+  });
 }
 
 document.getElementById("send-button").addEventListener("click", () => {
@@ -69,17 +68,22 @@ document.getElementById("user-input").addEventListener("keydown", (event) => {
 chrome.tabs.onRemoved.addListener((tabId) => {
 	chrome.storage.session.remove(String(tabId));
 });
-
-document.addEventListener("DOMContentLoaded", () => {
-	chrome.runtime.sendMessage({ action: "getUser" }, res => {
-		console.log(res);
-		if (res.status) {
-			userData = res.data;
-			loadChats();
-			buildUser();
-		}
-	});
+document.addEventListener("DOMContentLoaded", async () => {
+  const user = await getUserFromStorage();
+  if (user) {
+    userData = user; 
+  }// this is not right ; this will be changed when the auth is fixed
+    loadChats(); 
+    buildUser();
 });
+
+async function getUserFromStorage() {
+  return new Promise((resolve) => {
+    chrome.storage.session.get("user", (result) => {
+      resolve(result["user"]);
+    });
+  });
+}
 async function getStorage(key) {
   return new Promise((resolve) => {
     chrome.storage.local.get(key, (result) => {
@@ -139,29 +143,6 @@ async function checkTabUrl(tab) {
     }
   }
 }
-window.onload = () => {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    if (tabs.length > 0) {
-      checkTabUrl(tabs[0]);
-    }
-  });
-
-  chrome.tabs.onActivated.addListener((activeInfo) => {
-    chrome.tabs.get(activeInfo.tabId, (tab) => {
-      checkTabUrl(tab);
-    });
-  });
-
-  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.url) {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (tabs.length > 0 && tabs[0].id === tabId) {
-          checkTabUrl(tab);
-        }
-      });
-    }
-  });
-};
 window.onload = () => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (tabs.length > 0) {

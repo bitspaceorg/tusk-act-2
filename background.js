@@ -119,11 +119,11 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
 	return true;
 });
 
-chrome.tabs.onRemoved.addListener((tabId) => {
-	chrome.storage.session.remove(tabId.toString(), () => {
-		console.log(`Session data cleared for Tab ID: ${tabId}`);
-	});
-});
+//chrome.tabs.onRemoved.addListener((tabId) => {
+//	chrome.storage.session.remove(tabId.toString(), () => {
+//		console.log(`Session data cleared for Tab ID: ${tabId}`);
+//	});
+//});
 chrome.runtime.onInstalled.addListener(() => {
     chrome.storage.local.set({
         whitelist: [],
