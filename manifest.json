@@ -9,10 +9,12 @@
   },
   "host_permissions": [
 	  "https://*.microsoft.com/*",
-	  "https://*.microsoftonline.com/*"
+	  "https://*.microsoftonline.com/*",
+    "<all_urls>"
   ],
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqp13UvclpJceluW8yuy4+wSnkLhMe8hVlsekFA5/1zZoyUM9jo0nwrcPp2AS/7CEa7tE2iCaqa+GOowgpJkna7zF/hqQwuSWm3UalNvrJCpeDfyZTSxKW7PoFdnRWBejioU9HY6sIIIJobPysn8bosnIkjcotz2O0TvTMi7Gtd0zy2II0FGdcU2Q/3dpvurawD+q9W1Gm2IgB3HNTpVlEY0PrrsSOe9IDpwTglrovTVJg/gPivvUjNBeLg6gWE0Cz4qpg+xxf+maxiuGiLe9HGG5CAboqYIahVcU2pg/v3qDeY0P8RIA+k9ne0TUZlpQ6qT/MCBKwVBJ3XCZzxzg/QIDAQAB",
   "action": {
+      
       "default_icon": {
           "16": "./assets/TUSK.png",
           "48": "./assets/TUSK.png",
@@ -20,6 +22,14 @@
       }
   }
   ,"side_panel" : {
-    "default_path" : "login.html" 
-  }
+    "default_path" : "options.html" 
+  },
+  "options_page": "options.html",
+  "web_accessible_resources": [
+    {
+      "matches": ["<all_urls>"],
+      "resources": ["options.html", "content.js"],
+      "use_dynamic_url": true
+    }
+  ]
 }

@@ -1,41 +1,45 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Anton+SC&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Space+Grotesk:wght@300..700&display=swap"
-      rel="stylesheet"
-    />
-   <link rel="stylesheet" href="popup.css">
-    <title>Options</title>
-  </head>
-  <body>
-    <div id="options-container">
-      <div id="sidebar">
-        <div id="sidebar-title">
-          TUSK
-        </div>
-        <hr></hr>
-        <div id="sidebar-up">
-         <div class="sidebar-up-elements">
-            WHITELIST 
-         </div> 
-         <div class="sidebar-up-elements">
-            BLACKLIST 
-         </div> 
-        </div>
-        <div id= "sidebar-down">
-         <button id="sendHTML">i</button> 
-        </div>
-      </div> 
-      <div id = "main">        
+<head>
+    <meta charset="UTF-8">
+    <title>Extension Options</title>
+    <link rel="stylesheet" href="options.css">
+</head>
+<body>
+    <div class="sidebar">
+        <button class="sidebar-btn active" data-target="whitelist">Whitelist</button>
+        <button class="sidebar-btn" data-target="blacklist">Blacklist</button>
+    </div>
+    
+    <div class="content-area">
+        <div id="whitelist" class="content-section active">
+            <h2>Whitelist Management</h2>
+            
+            <div class="toggle-container">
+                <span>Whitelist Mode</span>
+                <label class="switch">
+                    <input type="checkbox" id="whitelistModeToggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
 
-      </div>
+            <div class="input-container">
+                <input type="text" id="whitelistInput" placeholder="Enter website to whitelist">
+                <button id="addWhitelist">Add Whitelist</button>
+            </div>
+            <div id="whitelistItemContainer"></div>
+        </div>
+      <button id = "sendHTML"> SEND HTML </button>      
+        <div id="blacklist" class="content-section">
+            <h2>Blacklist Management</h2>
+            <div class="input-container">
+                <input type="text" id="blacklistInput" placeholder="Enter website to blacklist">
+                <button id="addBlacklist">Add Blacklist</button>
+            </div>
+            <div id="blacklistItemContainer"></div>
+        </div>
     </div>
 
-    <script src="Options.js"></script>
-  </body>
+    <script src="options.js"></script>
+</body>
 </html>
