@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
-	chrome.runtime.sendMessage({ action: "getUser" }, res => {
-		if (res.data) window.location.href = "popup.html";
+	chrome.runtime.sendMessage({ action: "isToken" }, res => {
+		console.log(res);
+		if (res.status) window.location.href = "popup.html";
 	});
 });
 
