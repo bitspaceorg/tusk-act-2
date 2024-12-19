@@ -72,7 +72,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const user = await getUserFromStorage();
   if (user) {
     userData = user; 
-  }// this is not right ; this will be changed when the auth is fixed
+  }
+  // this is not right ; this will be changed when the auth is fixed
     loadChats(); 
     buildUser();
 });
@@ -130,16 +131,42 @@ async function checkTabUrl(tab) {
       });
 
     const messagesDiv = document.getElementById("response");
-    if (messagesDiv) {
-      const messageDiv = document.createElement("div");
-      if (isWhitelistModeOn && isNotWhitelisted) {
-        messageDiv.textContent = "Not Accessible (Whitelist Mode)";
-      } else if (isBlacklisted) {
-        messageDiv.textContent = "Not Accessible (Blacklisted)";
-      } else {
-        messageDiv.textContent = `Tab URL: ${tab.url}`;
+    const errorDiv = document.getElementById("error");
+    const errorDescDiv = document.getElementById("error-desc");
+    const inputDiv = document.getElementById("input-container")
+
+    if (isWhitelistModeOn && isNotWhitelisted) {
+      if (messagesDiv) messagesDiv.style.display = "none";
+      if(inputDiv) inputDiv.style.display = "none";
+      if (errorDiv) {
+        errorDiv.style.display = "block"; 
+        errorDiv.textContent = "Not Accessible (Whitelist Mode)";
+        errorDescDiv.style.display = "block";
       }
-      messagesDiv.appendChild(messageDiv);
+      if (errorDescDiv) {
+        errorDescDiv.style.display = "block"; 
+        errorDescDiv.textContent =  "When Whitelist Mode is enabled, only the websites listed in the whitelist will be accessible. All other websites will be restricted by default.";
+      }
+    } else if (isBlacklisted) {
+      if (messagesDiv) messagesDiv.style.display = "none";
+
+      if(inputDiv) inputDiv.style.display = "none";
+      if (errorDiv) {
+        errorDiv.style.display = "block";
+        errorDiv.textContent = "Not Accessible (Blacklisted)";
+      }
+      if (errorDescDiv) {
+        errorDescDiv.style.display = "block"; 
+        errorDescDiv.innerHTML = "Websites listed in the blacklist cannot be accessed.<br>Go to options page to change.";
+      }
+    } else {
+      if (messagesDiv) {
+        if (messagesDiv) messagesDiv.style.display = "flex";
+        buildChats();
+      }
+      if(inputDiv) inputDiv.style.display = "flex";
+      if (errorDiv) errorDiv.style.display = "none"; 
+      if(errorDescDiv) errorDescDiv.style.display = "none";
     }
   }
 }

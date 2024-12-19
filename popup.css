@@ -154,7 +154,34 @@ button svg {
   line-height: 25px;
   word-break: break-all;
 }
+#error {
+  color: #00487f;
+  text-align: center;
+  font-feature-settings:
+    "liga" off,
+    "clig" off;
+  font-family: "DM Sans";
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 62px; /* 124% */
+}
+#error-desc{
 
+  color: var(--Neutral-600, #6f6c90);
+  text-align: center;
+  font-feature-settings:
+    "liga" off,
+    "clig" off;
+  font-family: "DM Sans";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 30px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
 .bot-chat {
   display: flex;
   max-width: 50%;

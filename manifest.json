@@ -22,7 +22,7 @@
       }
   }
   ,"side_panel" : {
-    "default_path" : "popup.html" 
+    "default_path" : "login.html" 
   },
   "options_page": "options.html",
   "web_accessible_resources": [
