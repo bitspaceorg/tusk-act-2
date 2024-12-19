@@ -33,15 +33,14 @@ body {
   max-width: 800px;
   margin-left: auto;
   margin-right: auto;
-  /*background-color : red;*/
-  height : 100px;
 }
 .toggle-container {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  /*margin-down: 50px;*/
+  margin-down: 30px;
+  margin-top: 30px;
   font-family: "DM Sans", sans-serif;
 }
 
@@ -159,12 +158,8 @@ input:checked + .slider:before {
 }
 
 .content-area {
-  display:flex;
-  /*flex-grow: 1;*/
+  flex-grow: 1;
   padding: 20px;
-  flex-direction : column; 
-  
-  /*overflow-y: auto;*/
 }
 
 .content-section {
@@ -174,7 +169,7 @@ input:checked + .slider:before {
 .content-section.active {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0px;
 }
 
 .input-container {
@@ -195,6 +190,7 @@ input:checked + .slider:before {
   height: 30px;
   margin-left: auto;
   margin-right: auto;
+  margin-top : 30px;
   outline: none;
   /*width: 50%;*/
 }
@@ -250,6 +246,7 @@ input:checked + .slider:before {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adds a soft shadow */
   margin-bottom: 8px; /* Slightly larger gap for better spacing */
   max-width : 400px;
+  min-width : 400px;
   margin-right : auto;
   margin-left: auto;
 
@@ -272,7 +269,18 @@ input:checked + .slider:before {
   padding: 5px 10px;
   cursor: pointer;
 }
-
+#blacklistItemContainer{
+  display : flex;
+  flex-direction : column; 
+  gap : 15px;
+  margin-top : 20px;
+} 
+#whitelistItemContainer{
+  display : flex;
+  flex-direction : column; 
+  gap : 15px;
+  margin-top : 20px;
+} 
 @media screen and (min-width: 670px) {
   .input-container {
     width: 430px;

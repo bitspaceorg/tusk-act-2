@@ -22,7 +22,10 @@
 //    }
 //  );
 //});
-
+function isValidURL(url) {
+    const pattern = /^(https?:\/\/)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/[^\s]*)?$/;
+    return pattern.test(url);
+}
 document.addEventListener('DOMContentLoaded', () => {
     const whitelistInput = document.getElementById('whitelistInput');
     const addWhitelistBtn = document.getElementById('addWhitelist');
@@ -68,44 +71,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return listItem;
     }
+async function loadStoredLists() {
+    try {
+        whitelistContainer.innerHTML = '';
+        blacklistContainer.innerHTML = '';
 
-    async function loadStoredLists() {
-        try {
-            whitelistContainer.innerHTML = '';
-            blacklistContainer.innerHTML = '';
-
-            const whitelist = (await getStorage('whitelist')) || [];
-            whitelist.forEach(website => {
-                const listItem = createListItem(website, true);
-                whitelistContainer.appendChild(listItem);
-            });
-
-            const blacklist = (await getStorage('blacklist')) || [];
-            blacklist.forEach(website => {
-                const listItem = createListItem(website, false);
-                blacklistContainer.appendChild(listItem);
-            });
-
-            const isWhitelistModeOn = await getStorage('isWhitelistModeOn');
-            if (isWhitelistModeOn !== undefined) {
-                whitelistModeToggle.checked = isWhitelistModeOn;
+        // Get the whitelist
+        chrome.runtime.sendMessage({ action: 'getWhitelist' }, (res) => {
+            if (res && res.whitelist) {
+                res.whitelist.forEach(website => {
+                    const listItem = createListItem(website, true);
+                    whitelistContainer.appendChild(listItem);
+                });
             }
-        } catch (error) {
-            console.error("Error loading stored lists:", error);
-        }
-    }
-
-    async function getStorage(key) {
-        return new Promise((resolve, reject) => {
-            chrome.storage.local.get(key, (result) => {
-                if (chrome.runtime.lastError) {
-                    reject(chrome.runtime.lastError.message);
-                } else {
-                    resolve(result[key]);
-                }
-            });
         });
+
+        // Get the blacklist
+        chrome.runtime.sendMessage({ action: 'getBlacklist' }, (res) => {
+            if (res && res.blacklist) {
+                res.blacklist.forEach(website => {
+                    const listItem = createListItem(website, false);
+                    blacklistContainer.appendChild(listItem);
+                });
+            }
+        });
+
+        // Get the whitelist mode status
+        chrome.runtime.sendMessage({ action: 'getWhitelistMode' }, (res) => {
+            if (res && typeof res.isWhitelistModeOn !== 'undefined') {
+                whitelistModeToggle.checked = res.isWhitelistModeOn;
+            }
+        });
+    } catch (error) {
+        console.error("Error loading stored lists:", error);
     }
+}
 
     whitelistModeToggle.addEventListener('change', () => {
         const isWhitelistModeOn = whitelistModeToggle.checked;
@@ -119,6 +119,10 @@ document.addEventListener('DOMContentLoaded', () => {
     addWhitelistBtn.addEventListener('click', () => {
         const website = whitelistInput.value.trim();
         if (website) {
+        if (!isValidURL(website)) {
+            alert('Please enter a valid URL.');
+            return;
+        }
             console.log(website)
             chrome.runtime.sendMessage({
                 action: 'addToWhitelist',
@@ -134,6 +138,10 @@ document.addEventListener('DOMContentLoaded', () => {
     addBlacklistBtn.addEventListener('click', () => {
         const website = blacklistInput.value.trim();
         if (website) {
+           if (!isValidURL(website)) {
+              alert('Please enter a valid URL.');
+              return;
+            }
             chrome.runtime.sendMessage({
                 action: 'addToBlacklist',
                 website: website
