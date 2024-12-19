@@ -1,17 +1,18 @@
-// Extract and log the text content of the page
 const pageContent = document.body.innerText;
 
-console.log(pageContent);
+chrome.runtime.sendMessage({ action: "isToken" }, res => {
+	if (!res.status) {
+		window.href.location = 'login.html';
+	}
+})
 
-// Send the content to the extension's background or popup script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	if (message.type === "getPageContent") {
 		sendResponse({ content: pageContent });
 	}
 });
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === "getHTML") {
-    // Extract the full HTML content of the page
-    sendResponse({ html: document.documentElement.outerHTML });
-  }
+	if (message.action === "getHTML") {
+		sendResponse({ html: document.documentElement.outerHTML });
+	}
 });

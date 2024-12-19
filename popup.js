@@ -52,6 +52,7 @@ document.getElementById("send-button").addEventListener("click", () => {
 	const userInput = document.getElementById("user-input").value.trim();
 	storeChats("user", userInput);
 	storeChats("bot", "hello world!!!");
+	document.getElementById("user-input").value = "";
 });
 
 document.getElementById("user-input").addEventListener("keydown", (event) => {
@@ -68,6 +69,11 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+	chrome.runtime.sendMessage({ action: "isToken" }, res => {
+		if (!res.status) {
+			window.href.location = 'login.html';
+		}
+	})
 	chrome.runtime.sendMessage({ action: "getUser" }, res => {
 		userData = res.data;
 		loadChats();
