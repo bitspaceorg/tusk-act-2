@@ -91,29 +91,28 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
 	console.log(message.tabId)
 	switch (message.action) {
       // change 
-		case "storeChat":
-			chrome.storage.session.set({ [message.tabId]: message.chatData }, () => {
-				if (chrome.runtime.lastError) {
-					sendResponse({ status: false, message: chrome.runtime.lastError.message });
-				} else {
-					console.log("Chat data stored successfully");
-					sendResponse({ status: true, message: "Chat stored successfully" });
-				}
-			});
-			break;
+    case "storeChat":
+      chrome.storage.session.set({ [message.key]: message.chatData }, () => {
+        if (chrome.runtime.lastError) {
+          sendResponse({ status: false, message: chrome.runtime.lastError.message });
+        } else {
+          console.log("Chat data stored successfully");
+          sendResponse({ status: true, message: "Chat stored successfully" });
+        }
+      });
+      break;
 
-		case "getChat":
-      // change 
-			chrome.storage.session.get(String(message.tabId), (result) => {
-				if (chrome.runtime.lastError) {
-					sendResponse({ status: false, message: chrome.runtime.lastError.message });
-				} else {
-					const chatData = result[message.tabId] || [];
-					console.log("Retrieved chat data:", chatData);
-					sendResponse({ status: true, chatData });
-				}
-			});
-			break;
+    case "getChat":
+      chrome.storage.session.get(message.key, (result) => {
+        if (chrome.runtime.lastError) {
+          sendResponse({ status: false, message: chrome.runtime.lastError.message });
+        } else {
+          const chatData = result[message.key] || [];
+          console.log("Retrieved chat data:", chatData);
+          sendResponse({ status: true, chatData });
+        }
+      });
+      break;
 
 		case "auth":
 			authenticate().then((res) => {

@@ -41,37 +41,32 @@ function buildChats() {
 	messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
+const CHAT_STORAGE_KEY = "sessionChatData";
+
 function loadChats() {
-	getTabId((tabId) => {
-    //change
-		chrome.runtime.sendMessage({ action: "getChat", tabId }, (response) => {
-			if (response && response.status) {
-				chatDataRepo = response.chatData || [];
-				buildChats();
-			} else {
-				console.error("Failed to load chats:", response.message);
-			}
-		});
-	})
+  chrome.runtime.sendMessage({ action: "getChat", key: CHAT_STORAGE_KEY }, (response) => {
+    if (response && response.status) {
+      chatDataRepo = response.chatData || [];
+      buildChats();
+    } else {
+      console.error("Failed to load chats:", response.message);
+    }
+  });
 }
 
 function storeChats(type, message) {
-  // store chats
-	getTabId((tabId) => {
-		chatDataRepo = [...chatDataRepo, { type, message }];
-		chrome.runtime.sendMessage(
-			{ action: "storeChat", tabId, chatData: chatDataRepo },
-			(response) => {
-				if (response && response.status) {
-					buildChats();
-				} else {
-					console.error("Failed to store chat:", response.message);
-				}
-			}
-		);
-	});
+  chatDataRepo = [...chatDataRepo, { type, message }];
+  chrome.runtime.sendMessage(
+    { action: "storeChat", key: CHAT_STORAGE_KEY, chatData: chatDataRepo },
+    (response) => {
+      if (response && response.status) {
+        buildChats();
+      } else {
+        console.error("Failed to store chat:", response.message);
+      }
+    }
+  );
 }
-
 document.getElementById("send-button").addEventListener("click", async () => {
 	const userInput = document.getElementById("user-input").value.trim();
 	storeChats("user", userInput);
@@ -82,7 +77,7 @@ document.getElementById("send-button").addEventListener("click", async () => {
     const tabs = await new Promise((resolve) => {
         chrome.tabs.query({ active: true, currentWindow: true }, resolve);
     });
-    // doubt
+
     if (tabs.length > 0) {
         const url = new URL(tabs[0].url);
         route = url.pathname;
@@ -263,6 +258,8 @@ function document_domain() {
 async function checkIngestion() {
     let route = "";
     let domain = "";
+  
+    hideMessages();
 
     const tabs = await new Promise((resolve) => {
         chrome.tabs.query({ active: true, currentWindow: true }, resolve);
