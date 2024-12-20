@@ -43,6 +43,7 @@ function buildChats() {
 
 function loadChats() {
 	getTabId((tabId) => {
+    //change
 		chrome.runtime.sendMessage({ action: "getChat", tabId }, (response) => {
 			if (response && response.status) {
 				chatDataRepo = response.chatData || [];
@@ -55,6 +56,7 @@ function loadChats() {
 }
 
 function storeChats(type, message) {
+  // store chats
 	getTabId((tabId) => {
 		chatDataRepo = [...chatDataRepo, { type, message }];
 		chrome.runtime.sendMessage(
@@ -80,25 +82,25 @@ document.getElementById("send-button").addEventListener("click", async () => {
     const tabs = await new Promise((resolve) => {
         chrome.tabs.query({ active: true, currentWindow: true }, resolve);
     });
-
+    // doubt
     if (tabs.length > 0) {
         const url = new URL(tabs[0].url);
         route = url.pathname;
         domainString = url.hostname;
     }
-	const response = await fetch("http://127.0.0.1:6969/chat", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json"
-		},
-		body: JSON.stringify({
-			content: userInput,
-			domain : domainString,
-		})
-	});
-	const result = await response.json();
-	storeChats("bot", result['data']);
-	document.getElementById("user-input").value = "";
+    const response = await fetch("http://127.0.0.1:6969/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        content: userInput,
+        domain : domainString,
+      })
+    });
+    const result = await response.json();
+    storeChats("bot", result['data']);
+    document.getElementById("user-input").value = "";
 });
 
 document.getElementById("user-input").addEventListener("keydown", async (event) => {
@@ -119,19 +121,19 @@ document.getElementById("user-input").addEventListener("keydown", async (event) 
         route = url.pathname;
         domainString = url.hostname;
     }
-	const response = await fetch("http://127.0.0.1:6969/chat", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json"
-		},
-		body: JSON.stringify({
-			content: userInput,
-			domain : domainString,
-		})
-	});
-	const result = await response.json();
-	storeChats("bot", result['data']);
-	document.getElementById("user-input").value = "";
+    const response = await fetch("http://127.0.0.1:6969/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        content: userInput,
+        domain : domainString,
+      })
+    });
+    const result = await response.json();
+    storeChats("bot", result['data']);
+    document.getElementById("user-input").value = "";
 	}
 });
 
@@ -187,8 +189,8 @@ async function ingest_route() {
 				button.remove();
 			}
 
-    const messagesDiv = document.getElementById("response");
-    const inputDiv = document.getElementById("input-container");
+      const messagesDiv = document.getElementById("response");
+      const inputDiv = document.getElementById("input-container");
 
         if (messagesDiv) {
            messagesDiv.style.display = "flex";
@@ -236,10 +238,9 @@ function document_domain() {
 
 
 
-	// Check if the button already exists
 	if (!document.getElementById("document-domain-button")) {
 		const button = document.createElement("button");
-		button.id = "document-domain-button"; // Add an ID to the button
+		button.id = "document-domain-button"; 
 		button.textContent = "Document Domain";
 		button.style.width = "250px";
 		button.style.textAlign = "center";
@@ -328,7 +329,7 @@ async function checkTabUrl(tab) {
     if (tab && tab.url) {
         chrome.runtime.sendMessage(
             { action: "checkUrl", url: tab.url },
-            async (response) => { // Mark the callback as async
+            async (response) => { 
                 if (chrome.runtime.lastError) {
                     console.error("Error:", chrome.runtime.lastError.message);
                     return;
@@ -373,7 +374,6 @@ async function checkTabUrl(tab) {
                     if (errorDiv) errorDiv.style.display = "none";
                     if (errorDescDiv) errorDescDiv.style.display = "none";
 
-                    // Wait for checkIngestion to finish
                     await checkIngestion();
                 }
             }

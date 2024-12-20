@@ -1,3 +1,7 @@
+function isValidURL(url) {
+    const pattern = /^(https?:\/\/)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/[^\s]*)?$/;
+    return pattern.test(url);
+}
 document.addEventListener('DOMContentLoaded', () => {
 	const whitelistInput = document.getElementById('whitelistInput');
 	const addWhitelistBtn = document.getElementById('addWhitelist');
@@ -69,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			console.error("Error loading stored lists:", error);
 		}
 	}
-
+// change
 	async function getStorage(key) {
 		return new Promise((resolve, reject) => {
 			chrome.storage.local.get(key, (result) => {
@@ -94,6 +98,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	addWhitelistBtn.addEventListener('click', () => {
 		const website = whitelistInput.value.trim();
 		if (website) {
+      if (!isValidURL(website)) {
+            alert('Please enter a valid URL.');
+            return;
+        }
 			console.log(website)
 			chrome.runtime.sendMessage({
 				action: 'addToWhitelist',
@@ -109,6 +117,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	addBlacklistBtn.addEventListener('click', () => {
 		const website = blacklistInput.value.trim();
 		if (website) {
+       if (!isValidURL(website)) {
+              alert('Please enter a valid URL.');
+              return;
+            }
 			chrome.runtime.sendMessage({
 				action: 'addToBlacklist',
 				website: website

@@ -90,6 +90,7 @@ async function getUserInfo(token) {
 chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
 	console.log(message.tabId)
 	switch (message.action) {
+      // change 
 		case "storeChat":
 			chrome.storage.session.set({ [message.tabId]: message.chatData }, () => {
 				if (chrome.runtime.lastError) {
@@ -102,6 +103,7 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
 			break;
 
 		case "getChat":
+      // change 
 			chrome.storage.session.get(String(message.tabId), (result) => {
 				if (chrome.runtime.lastError) {
 					sendResponse({ status: false, message: chrome.runtime.lastError.message });
