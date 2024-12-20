@@ -17,6 +17,14 @@ function buildUser() {
 	}
 }
 
+function hideMessages() {
+    const messagesDiv = document.getElementById("response");
+    const inputDiv = document.getElementById("input-container");
+
+    if (messagesDiv) messagesDiv.style.display = "none";
+    if (inputDiv) inputDiv.style.display = "none";
+}
+
 function buildChats() {
 	const messagesDiv = document.getElementById("response");
 	messagesDiv.innerHTML = "";
@@ -65,6 +73,19 @@ function storeChats(type, message) {
 document.getElementById("send-button").addEventListener("click", async () => {
 	const userInput = document.getElementById("user-input").value.trim();
 	storeChats("user", userInput);
+
+    let route = "";
+    let domainString = "";
+
+    const tabs = await new Promise((resolve) => {
+        chrome.tabs.query({ active: true, currentWindow: true }, resolve);
+    });
+
+    if (tabs.length > 0) {
+        const url = new URL(tabs[0].url);
+        route = url.pathname;
+        domainString = url.hostname;
+    }
 	const response = await fetch("http://127.0.0.1:6969/chat", {
 		method: "POST",
 		headers: {
@@ -72,7 +93,7 @@ document.getElementById("send-button").addEventListener("click", async () => {
 		},
 		body: JSON.stringify({
 			content: userInput,
-			domain,
+			domain : domainString,
 		})
 	});
 	const result = await response.json();
@@ -81,28 +102,63 @@ document.getElementById("send-button").addEventListener("click", async () => {
 });
 
 document.getElementById("user-input").addEventListener("keydown", async (event) => {
+  
 	if (event.key === "Enter") {
-		const userInput = document.getElementById("user-input").value.trim();
-		storeChats("user", userInput);
-		const response = await fetch("http://127.0.0.1:6969/chat", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({
-				content: userInput,
-				domain,
-			})
-		});
-		const result = await response.json();
-		storeChats("bot", result['data']);
-		document.getElementById("user-input").value = "";
+	const userInput = document.getElementById("user-input").value.trim();
+	storeChats("user", userInput);
+
+    let route = "";
+    let domainString = "";
+
+    const tabs = await new Promise((resolve) => {
+        chrome.tabs.query({ active: true, currentWindow: true }, resolve);
+    });
+
+    if (tabs.length > 0) {
+        const url = new URL(tabs[0].url);
+        route = url.pathname;
+        domainString = url.hostname;
+    }
+	const response = await fetch("http://127.0.0.1:6969/chat", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify({
+			content: userInput,
+			domain : domainString,
+		})
+	});
+	const result = await response.json();
+	storeChats("bot", result['data']);
+	document.getElementById("user-input").value = "";
 	}
 });
 
 
 async function ingest_route() {
+
+    let route = "";
+    let domain = "";
+
+    const tabs = await new Promise((resolve) => {
+        chrome.tabs.query({ active: true, currentWindow: true }, resolve);
+    });
+
+    if (tabs.length > 0) {
+        const url = new URL(tabs[0].url);
+        route = url.pathname;
+        domain = url.hostname;
+    }
 	const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+	const button = document.getElementById("document-domain-button");
+
+	if (button) {
+		button.disabled = true;
+		button.style.cursor = "not-allowed";
+		button.style.opacity = "0.5"; 
+	}
 
 	chrome.scripting.executeScript(
 		{
@@ -111,7 +167,8 @@ async function ingest_route() {
 		},
 		async (results) => {
 			const htmlContent = results;
-			console.log("options", htmlContent[0]["result"])
+			console.log("options", htmlContent[0]["result"]);
+			
 			await fetch("http://127.0.0.1:6969/ingest", {
 				method: "POST",
 				headers: {
@@ -123,12 +180,42 @@ async function ingest_route() {
 					route,
 				})
 			});
-			window.location.href = 'popup.html';
+
+      insert_domain();
+
+			if (button) {
+				button.remove();
+			}
+
+    const messagesDiv = document.getElementById("response");
+    const inputDiv = document.getElementById("input-container");
+
+        if (messagesDiv) {
+           messagesDiv.style.display = "flex";
+                        // buildChats();
+              loadChats();
+          }
+        if (inputDiv) inputDiv.style.display = "flex";
+			//window.location.href = 'popup.html';
+
 		}
 	);
 }
 
 async function insert_domain() {
+  
+    let route = "";
+    let domain = "";
+
+    const tabs = await new Promise((resolve) => {
+        chrome.tabs.query({ active: true, currentWindow: true }, resolve);
+    });
+
+    if (tabs.length > 0) {
+        const url = new URL(tabs[0].url);
+        route = url.pathname;
+        domain = url.hostname;
+    }
 	await fetch("http://127.0.0.1:6969/insert-route", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
@@ -137,130 +224,161 @@ async function insert_domain() {
 			route
 		})
 	});
-	window.location.href = 'popup.html';
+	//window.location.href = 'popup.html';
 }
 
 function document_domain() {
+
+	hideMessages();
+
 	const container = document.getElementById("button-container");
 	if (!container) return;
 
-	document.getElementById("input-container").style.display = 'none';
 
-	const button = document.createElement("button");
-	button.textContent = "Document Domain";
-	button.style.width = "250px";
-	button.style.textAlign = "center";
-	button.style.alignItems = "center";
-	button.style.borderRadius = "2px";
-	button.style.background = "#00487f";
-	button.style.color = "#fff";
-	button.style.border = "none";
-	button.style.padding = "10px";
-	button.style.cursor = "pointer";
 
-	button.addEventListener("click", () => {
-		ingest_route();
-	});
+	// Check if the button already exists
+	if (!document.getElementById("document-domain-button")) {
+		const button = document.createElement("button");
+		button.id = "document-domain-button"; // Add an ID to the button
+		button.textContent = "Document Domain";
+		button.style.width = "250px";
+		button.style.textAlign = "center";
+		button.style.alignItems = "center";
+		button.style.borderRadius = "2px";
+		button.style.background = "#00487f";
+		button.style.color = "#fff";
+		button.style.border = "none";
+		button.style.padding = "10px";
+		button.style.cursor = "pointer";
 
-	container.appendChild(button);
+		button.addEventListener("click", () => {
+			ingest_route();
+		});
 
+		container.appendChild(button);
+	}
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
+async function checkIngestion() {
+    let route = "";
+    let domain = "";
 
-	const tabs = await new Promise((resolve) => {
-		chrome.tabs.query({ active: true, currentWindow: true }, resolve);
-	});
+    const tabs = await new Promise((resolve) => {
+        chrome.tabs.query({ active: true, currentWindow: true }, resolve);
+    });
 
-	if (tabs.length > 0) {
-		const url = new URL(tabs[0].url);
-		route = url.pathname;
-		domain = url.hostname;
-	}
+    if (tabs.length > 0) {
+        const url = new URL(tabs[0].url);
+        route = url.pathname;
+        domain = url.hostname;
+    }
 
-	chrome.runtime.sendMessage({ action: "isToken" }, res => {
-		if (!res.status) {
-			window.href.location = 'login.html';
-		}
-	})
+    chrome.runtime.sendMessage({ action: "isToken" }, (res) => {
+        if (!res.status) {
+            window.location.href = "login.html";
+        }
+    });
 
-	const fetch_response = await fetch("http://127.0.0.1:6969/fetch-route", {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({
-			domain,
-			route
-		})
-	});
+    const fetch_response = await fetch("http://127.0.0.1:6969/fetch-route", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            domain,
+            route,
+        }),
+    });
 
-	const fetch_result = await fetch_response.json();
-	const data = fetch_result['data'];
-	console.log(domain);
-	console.log(route);
-	console.log(data);
+    const fetch_result = await fetch_response.json();
+    const data = fetch_result["data"];
+    console.log(domain);
+    console.log(route);
+    console.log(data);
 
-	if (!data['domain']) document_domain();
-	else if (data['domain'] && !data['route']) ingest_route();
-	else loadChats();
+    if (!data["domain"]) {
+        document_domain();    
+        console.log("Not Avaliable");
+    } 
+    else if (data["domain"] && !data["route"]){
+      ingest_route();
+      const buttonDiv = document.getElementById("document-domain-button");
 
-	chrome.runtime.sendMessage({ action: "getUser" }, res => {
-		userData = res.data;
-		buildUser();
-	});
+      if(buttonDiv) buttonDiv.remove;  
+    console.log("Domain only avaialble");
+    } 
+    else{
+    console.log("Both Available");
+    const messagesDiv = document.getElementById("response");
+    const inputDiv = document.getElementById("input-container");
+    const buttonDiv = document.getElementById("document-domain-button");
+        if (messagesDiv) {
+           messagesDiv.style.display = "flex";
+                        // buildChats();
+              loadChats();
+          }
+        if (inputDiv) inputDiv.style.display = "flex";
+        if(buttonDiv) buttonDiv.remove();  
+    } 
+    
+    chrome.runtime.sendMessage({ action: "getUser" }, (res) => {
+        const userData = res.data;
+        buildUser(userData);
+    });
+}
+async function checkTabUrl(tab) {
+    if (tab && tab.url) {
+        chrome.runtime.sendMessage(
+            { action: "checkUrl", url: tab.url },
+            async (response) => { // Mark the callback as async
+                if (chrome.runtime.lastError) {
+                    console.error("Error:", chrome.runtime.lastError.message);
+                    return;
+                }
 
+                const messagesDiv = document.getElementById("response");
+                const errorDiv = document.getElementById("error");
+                const errorDescDiv = document.getElementById("error-desc");
+                const inputDiv = document.getElementById("input-container");
 
-});
-function checkTabUrl(tab) {
-	if (tab && tab.url) {
-		chrome.runtime.sendMessage(
-			{ action: "checkUrl", url: tab.url },
-			(response) => {
-				if (chrome.runtime.lastError) {
-					console.error("Error:", chrome.runtime.lastError.message);
-					return;
-				}
+                if (response.isNotWhitelisted) {
+                    if (messagesDiv) messagesDiv.style.display = "none";
+                    if (inputDiv) inputDiv.style.display = "none";
+                    if (errorDiv) {
+                        errorDiv.style.display = "block";
+                        errorDiv.textContent = "Not Accessible (Whitelist Mode)";
+                    }
+                    if (errorDescDiv) {
+                        errorDescDiv.style.display = "block";
+                        errorDescDiv.textContent =
+                            "When Whitelist Mode is enabled, only the websites listed in the whitelist will be accessible. All other websites will be restricted by default.";
+                    }
+                } else if (response.isBlacklisted) {
+                    if (messagesDiv) messagesDiv.style.display = "none";
+                    if (inputDiv) inputDiv.style.display = "none";
+                    if (errorDiv) {
+                        errorDiv.style.display = "block";
+                        errorDiv.textContent = "Not Accessible (Blacklisted)";
+                    }
+                    if (errorDescDiv) {
+                        errorDescDiv.style.display = "block";
+                        errorDescDiv.innerHTML =
+                            "Websites listed in the blacklist cannot be accessed.<br>Go to options page to change.";
+                    }
+                } else {
+                    if (messagesDiv) {
+                        messagesDiv.style.display = "flex";
+                        // buildChats();
+                        loadChats();
+                    }
+                    if (inputDiv) inputDiv.style.display = "flex";
+                    if (errorDiv) errorDiv.style.display = "none";
+                    if (errorDescDiv) errorDescDiv.style.display = "none";
 
-				const messagesDiv = document.getElementById("response");
-				const errorDiv = document.getElementById("error");
-				const errorDescDiv = document.getElementById("error-desc");
-				const inputDiv = document.getElementById("input-container");
-
-				if (response.isNotWhitelisted) {
-					if (messagesDiv) messagesDiv.style.display = "none";
-					if (inputDiv) inputDiv.style.display = "none";
-					if (errorDiv) {
-						errorDiv.style.display = "block";
-						errorDiv.textContent = "Not Accessible (Whitelist Mode)";
-					}
-					if (errorDescDiv) {
-						errorDescDiv.style.display = "block";
-						errorDescDiv.textContent =
-							"When Whitelist Mode is enabled, only the websites listed in the whitelist will be accessible. All other websites will be restricted by default.";
-					}
-				} else if (response.isBlacklisted) {
-					if (messagesDiv) messagesDiv.style.display = "none";
-					if (inputDiv) inputDiv.style.display = "none";
-					if (errorDiv) {
-						errorDiv.style.display = "block";
-						errorDiv.textContent = "Not Accessible (Blacklisted)";
-					}
-					if (errorDescDiv) {
-						errorDescDiv.style.display = "block";
-						errorDescDiv.innerHTML =
-							"Websites listed in the blacklist cannot be accessed.<br>Go to options page to change.";
-					}
-				} else {
-					if (messagesDiv) {
-						messagesDiv.style.display = "flex";
-						buildChats();
-					}
-					if (inputDiv) inputDiv.style.display = "flex";
-					if (errorDiv) errorDiv.style.display = "none";
-					if (errorDescDiv) errorDescDiv.style.display = "none";
-				}
-			}
-		);
-	}
+                    // Wait for checkIngestion to finish
+                    await checkIngestion();
+                }
+            }
+        );
+    }
 }
 window.onload = () => {
 	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
