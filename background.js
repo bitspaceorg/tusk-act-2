@@ -8,6 +8,20 @@ chrome.runtime.onInstalled.addListener(() => {
 	});
 });
 
+chrome.tabs.onActivated.addListener((activeInfo) => {
+	chrome.tabs.get(activeInfo.tabId, (tab) => {
+		if (tab.url) {
+			chrome.runtime.sendMessage({ action: "updatePanel", url: tab.url });
+		}
+	});
+});
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+	if (changeInfo.url) {
+		chrome.runtime.sendMessage({ action: "updatePanel", url: changeInfo.url });
+	}
+});
+
 chrome.sidePanel
 	.setPanelBehavior({ openPanelOnActionClick: true })
 	.catch((error) => console.error(error));
@@ -74,29 +88,30 @@ async function getUserInfo(token) {
 }
 
 chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
+	console.log(message.tabId)
 	switch (message.action) {
-    case "storeChat":
-      chrome.storage.session.set({ [message.key]: message.chatData }, () => {
-        if (chrome.runtime.lastError) {
-          sendResponse({ status: false, message: chrome.runtime.lastError.message });
-        } else {
-          console.log("Chat data stored successfully");
-          sendResponse({ status: true, message: "Chat stored successfully" });
-        }
-      });
-      break;
+		case "storeChat":
+			chrome.storage.session.set({ [message.tabId]: message.chatData }, () => {
+				if (chrome.runtime.lastError) {
+					sendResponse({ status: false, message: chrome.runtime.lastError.message });
+				} else {
+					console.log("Chat data stored successfully");
+					sendResponse({ status: true, message: "Chat stored successfully" });
+				}
+			});
+			break;
 
-    case "getChat":
-      chrome.storage.session.get(message.key, (result) => {
-        if (chrome.runtime.lastError) {
-          sendResponse({ status: false, message: chrome.runtime.lastError.message });
-        } else {
-          const chatData = result[message.key] || [];
-          console.log("Retrieved chat data:", chatData);
-          sendResponse({ status: true, chatData });
-        }
-      });
-      break;
+		case "getChat":
+			chrome.storage.session.get(String(message.tabId), (result) => {
+				if (chrome.runtime.lastError) {
+					sendResponse({ status: false, message: chrome.runtime.lastError.message });
+				} else {
+					const chatData = result[message.tabId] || [];
+					console.log("Retrieved chat data:", chatData);
+					sendResponse({ status: true, chatData });
+				}
+			});
+			break;
 
 		case "auth":
 			authenticate().then((res) => {
@@ -211,52 +226,52 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
 				sendResponse({ status: true });
 			});
 			break;
-case "checkUrl":
-  const normalizeUrl = (url) => {
-    if (url.startsWith("http")) return [url, url.replace("://www.", "://")];
-    const httpsUrl = `https://${url}`;
-    const wwwUrl = `https://www.${url}`;
-    return [httpsUrl, wwwUrl];
-  };
+		case "checkUrl":
+			const normalizeUrl = (url) => {
+				if (url.startsWith("http")) return [url, url.replace("://www.", "://")];
+				const httpsUrl = `https://${url}`;
+				const wwwUrl = `https://www.${url}`;
+				return [httpsUrl, wwwUrl];
+			};
 
-  chrome.storage.local.get(
-    ["blacklist", "whitelist", "isWhitelistModeOn"],
-    (result) => {
-      const blacklist = result.blacklist || [];
-      const whitelist = result.whitelist || [];
-      const isWhitelistModeOn = result.isWhitelistModeOn || false;
+			chrome.storage.local.get(
+				["blacklist", "whitelist", "isWhitelistModeOn"],
+				(result) => {
+					const blacklist = result.blacklist || [];
+					const whitelist = result.whitelist || [];
+					const isWhitelistModeOn = result.isWhitelistModeOn || false;
 
-      const isBlacklisted = blacklist.some((blockedUrl) => {
-        const [normalizedBlockedUrl, normalizedWithWww] = normalizeUrl(blockedUrl);
+					const isBlacklisted = blacklist.some((blockedUrl) => {
+						const [normalizedBlockedUrl, normalizedWithWww] = normalizeUrl(blockedUrl);
 
-        return (
-          message.url === blockedUrl ||
-          message.url.startsWith(blockedUrl) ||
-          message.url.startsWith(normalizedBlockedUrl) ||
-          message.url.startsWith(normalizedWithWww)
-        );
-      });
+						return (
+							message.url === blockedUrl ||
+							message.url.startsWith(blockedUrl) ||
+							message.url.startsWith(normalizedBlockedUrl) ||
+							message.url.startsWith(normalizedWithWww)
+						);
+					});
 
-      const isNotWhitelisted =
-        isWhitelistModeOn &&
-        !whitelist.some((allowedUrl) => {
-          const [normalizedAllowedUrl, normalizedWithWww] = normalizeUrl(allowedUrl);
+					const isNotWhitelisted =
+						isWhitelistModeOn &&
+						!whitelist.some((allowedUrl) => {
+							const [normalizedAllowedUrl, normalizedWithWww] = normalizeUrl(allowedUrl);
 
-          return (
-            message.url === allowedUrl ||
-            message.url.startsWith(allowedUrl) ||
-            message.url.startsWith(normalizedAllowedUrl) ||
-            message.url.startsWith(normalizedWithWww)
-          );
-        });
+							return (
+								message.url === allowedUrl ||
+								message.url.startsWith(allowedUrl) ||
+								message.url.startsWith(normalizedAllowedUrl) ||
+								message.url.startsWith(normalizedWithWww)
+							);
+						});
 
-      sendResponse({
-        isBlacklisted,
-        isNotWhitelisted,
-      });
-    }
-  );
-  return true;
+					sendResponse({
+						isBlacklisted,
+						isNotWhitelisted,
+					});
+				}
+			);
+			return true;
 		case 'getWhitelistMode':
 			chrome.storage.local.get('isWhitelistModeOn', (result) => {
 				console.log('Retrieved whitelist mode:', result.isWhitelistModeOn);
@@ -265,7 +280,7 @@ case "checkUrl":
 				});
 			});
 			break;
-  
+
 		default:
 			console.warn("Unknown action:", message.action);
 			sendResponse({ status: false, message: "Unknown action" });
