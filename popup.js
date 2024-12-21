@@ -36,7 +36,7 @@ function buildChats() {
 	const messagesDiv = document.getElementById("response");
 	messagesDiv.innerHTML = "";
 
-	console.log(chatDataRepo);
+	//console.log(chatDataRepo);
 
 	chatDataRepo.forEach(({ type, message }) => {
 		const messageDiv = document.createElement("div");
@@ -100,7 +100,7 @@ document.getElementById("send-button").addEventListener("click", async () => {
     const Iloader =  document.getElementById("inner-chat-loader");    
     Iloader.style.display = 'flex';
 
-    const response = await fetch("http://127.0.0.1:6969/chat", {
+    const response = await fetch("http://20.85.126.101:8080/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -149,7 +149,7 @@ document.getElementById("user-input").addEventListener("keydown", async (event) 
     const Iloader =  document.getElementById("inner-chat-loader");    
     Iloader.style.display = 'flex';
 
-    const response = await fetch("http://127.0.0.1:6969/chat", {
+    const response = await fetch("http://20.85.126.101:8080/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -203,9 +203,9 @@ async function ingest_route() {
 		},
 		async (results) => {
 			const htmlContent = results;
-			console.log("options", htmlContent[0]["result"]);
+			//console.log("options", htmlContent[0]["result"]);
 			
-			await fetch("http://127.0.0.1:6969/ingest", {
+			await fetch("http://20.85.126.101:8080/ingest", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json"
@@ -253,7 +253,7 @@ async function insert_domain() {
         route = url.pathname;
         domain = url.hostname;
     }
-	await fetch("http://127.0.0.1:6969/insert-route", {
+	await fetch("http://20.85.126.101:8080/insert-route", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({
@@ -322,7 +322,7 @@ async function checkIngestion() {
         }
     });
 
-    const fetch_response = await fetch("http://127.0.0.1:6969/fetch-route", {
+    const fetch_response = await fetch("http://20.85.126.101:8080/fetch-route", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -333,13 +333,13 @@ async function checkIngestion() {
 
     const fetch_result = await fetch_response.json();
     const data = fetch_result["data"];
-    console.log(domain);
-    console.log(route);
-    console.log(data);
+    //console.log(domain);
+    //console.log(route);
+    //console.log(data);
 
     if (!data["domain"]) {
         document_domain();    
-        console.log("Not Avaliable");
+        //console.log("Not Avaliable");
         quitLoading();
     } 
     else if (data["domain"] && !data["route"]){
@@ -348,10 +348,10 @@ async function checkIngestion() {
 
         if(buttonDiv) buttonDiv.remove();  
       //quitLoading();
-    console.log("Domain only avaialble");
+    //console.log("Domain only avaialble");
     } 
     else{
-    console.log("Both Available");
+    //console.log("Both Available");
     
         quitLoading();
     const messagesDiv = document.getElementById("response");
