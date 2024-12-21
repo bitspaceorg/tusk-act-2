@@ -16,7 +16,14 @@ function buildUser() {
 		//usernameDiv.innerText = userData["displayName"];
 	}
 }
-
+function setLoading(){
+  const loader = document.getElementById("spinner");
+  loader.style.display = 'flex';
+}
+function quitLoading(){
+  const loader = document.getElementById("spinner");
+  loader.style.display = "none";
+}
 function hideMessages() {
     const messagesDiv = document.getElementById("response");
     const inputDiv = document.getElementById("input-container");
@@ -83,6 +90,16 @@ document.getElementById("send-button").addEventListener("click", async () => {
         route = url.pathname;
         domainString = url.hostname;
     }
+    const loaderC =  document.getElementById("chat-loader");    
+    loaderC.style.display = 'flex';
+    loaderC.classList.add('chat-loader');
+    document.getElementById("user-input").value = "";
+    const sendButton = document.getElementById("send-button");
+    sendButton.disabled = true; 
+
+    const Iloader =  document.getElementById("inner-chat-loader");    
+    Iloader.style.display = 'flex';
+
     const response = await fetch("http://127.0.0.1:6969/chat", {
       method: "POST",
       headers: {
@@ -93,9 +110,13 @@ document.getElementById("send-button").addEventListener("click", async () => {
         domain : domainString,
       })
     });
+    
+    loaderC.classList.remove('chat-loader');
+    loaderC.style.dispay = 'none';
+    Iloader.style.display = 'none';
+    sendButton.disabled = 'false';
     const result = await response.json();
     storeChats("bot", result['data']);
-    document.getElementById("user-input").value = "";
 });
 
 document.getElementById("user-input").addEventListener("keydown", async (event) => {
@@ -116,6 +137,18 @@ document.getElementById("user-input").addEventListener("keydown", async (event) 
         route = url.pathname;
         domainString = url.hostname;
     }
+    const loaderC =  document.getElementById("chat-loader");    
+    loaderC.style.display = 'flex';
+    loaderC.classList.add('chat-loader');
+    document.getElementById("user-input").value = "";
+    
+
+    const sendButton = document.getElementById("send-button");
+    sendButton.disabled = true; 
+
+    const Iloader =  document.getElementById("inner-chat-loader");    
+    Iloader.style.display = 'flex';
+
     const response = await fetch("http://127.0.0.1:6969/chat", {
       method: "POST",
       headers: {
@@ -126,9 +159,14 @@ document.getElementById("user-input").addEventListener("keydown", async (event) 
         domain : domainString,
       })
     });
+    
+    loaderC.classList.remove('chat-loader');
+    loaderC.style.dispay = 'none';
+    Iloader.style.display = 'none';
+
+    sendButton.disabled = 'false';
     const result = await response.json();
     storeChats("bot", result['data']);
-    document.getElementById("user-input").value = "";
 	}
 });
 
@@ -137,6 +175,7 @@ async function ingest_route() {
 
     let route = "";
     let domain = "";
+    setLoading();
 
     const tabs = await new Promise((resolve) => {
         chrome.tabs.query({ active: true, currentWindow: true }, resolve);
@@ -193,6 +232,7 @@ async function ingest_route() {
               loadChats();
           }
         if (inputDiv) inputDiv.style.display = "flex";
+        quitLoading();
 			//window.location.href = 'popup.html';
 
 		}
@@ -203,7 +243,7 @@ async function insert_domain() {
   
     let route = "";
     let domain = "";
-
+    
     const tabs = await new Promise((resolve) => {
         chrome.tabs.query({ active: true, currentWindow: true }, resolve);
     });
@@ -227,6 +267,7 @@ async function insert_domain() {
 function document_domain() {
 
 	hideMessages();
+  setLoading();
 
 	const container = document.getElementById("button-container");
 	if (!container) return;
@@ -250,9 +291,10 @@ function document_domain() {
 		button.addEventListener("click", () => {
 			ingest_route();
 		});
-
 		container.appendChild(button);
+
 	}
+  quitLoading();
 }
 
 async function checkIngestion() {
@@ -260,7 +302,10 @@ async function checkIngestion() {
     let domain = "";
   
     hideMessages();
-
+    setLoading();
+    const buttonDiv = document.getElementById("document-domain-button");
+    if(buttonDiv) buttonDiv.remove();  
+    
     const tabs = await new Promise((resolve) => {
         chrome.tabs.query({ active: true, currentWindow: true }, resolve);
     });
@@ -295,22 +340,26 @@ async function checkIngestion() {
     if (!data["domain"]) {
         document_domain();    
         console.log("Not Avaliable");
+        quitLoading();
     } 
     else if (data["domain"] && !data["route"]){
       ingest_route();
       const buttonDiv = document.getElementById("document-domain-button");
 
-      if(buttonDiv) buttonDiv.remove;  
+        if(buttonDiv) buttonDiv.remove();  
+      //quitLoading();
     console.log("Domain only avaialble");
     } 
     else{
     console.log("Both Available");
+    
+        quitLoading();
     const messagesDiv = document.getElementById("response");
     const inputDiv = document.getElementById("input-container");
     const buttonDiv = document.getElementById("document-domain-button");
         if (messagesDiv) {
            messagesDiv.style.display = "flex";
-                        // buildChats();
+              // buildChats();
               loadChats();
           }
         if (inputDiv) inputDiv.style.display = "flex";
@@ -349,6 +398,7 @@ async function checkTabUrl(tab) {
                         errorDescDiv.textContent =
                             "When Whitelist Mode is enabled, only the websites listed in the whitelist will be accessible. All other websites will be restricted by default.";
                     }
+                    quitLoading();
                 } else if (response.isBlacklisted) {
                     if (messagesDiv) messagesDiv.style.display = "none";
                     if (inputDiv) inputDiv.style.display = "none";
@@ -361,6 +411,7 @@ async function checkTabUrl(tab) {
                         errorDescDiv.innerHTML =
                             "Websites listed in the blacklist cannot be accessed.<br>Go to options page to change.";
                     }
+                    quitLoading();
                 } else {
                     if (messagesDiv) {
                         messagesDiv.style.display = "flex";

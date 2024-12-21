@@ -16,9 +16,10 @@
   "action": {
       
       "default_icon": {
-          "16": "./assets/TUSK.png",
-          "48": "./assets/TUSK.png",
-          "128":"./assets/TUSK.png"
+          "16": "./assets/128.png",
+          "32":"./assets/128.png", 
+          "48": "./assets/128.png",
+          "128":"./assets/128.png"
       }
   }
   ,"side_panel" : {

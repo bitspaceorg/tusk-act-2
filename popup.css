@@ -140,9 +140,8 @@ button svg {
     ),
     #fff;
   box-shadow:
-    0px 7.917px 39.583px -19.792px rgba(255, 255, 255, 0.2),
-    0.99px 0.99px 0px 0px rgba(255, 255, 255, 0.08) inset,
-    0px 0px 0px 0.99px rgba(255, 255, 255, 0.06) inset;
+    0px 10px 20px rgba(138, 91, 210, 0.3), /* Slight purple glow */
+    0px 5px 15px rgba(90, 178, 255, 0.2);  /* Soft blue glow */
   color: var(--Neutral-600, #6f6c90);
   font-feature-settings:
     "liga" off,
@@ -153,6 +152,14 @@ button svg {
   font-weight: 400;
   line-height: 25px;
   word-break: break-all;
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Smooth transition for hover effect */
+}
+
+.user-chat:hover {
+  transform: translateY(-5px); /* Subtle lift effect */
+  box-shadow:
+    0px 15px 30px rgba(138, 91, 210, 0.5), /* Enhanced purple glow */
+    0px 10px 20px rgba(90, 178, 255, 0.4); /* Enhanced blue glow */
 }
 #error {
   color: #00487f;
@@ -202,9 +209,8 @@ button svg {
     ),
     #fff;
   box-shadow:
-    0px 7.917px 39.583px -19.792px rgba(255, 255, 255, 0.2),
-    0.99px 0.99px 0px 0px rgba(255, 255, 255, 0.08) inset,
-    0px 0px 0px 0.99px rgba(255, 255, 255, 0.06) inset;
+    0px 10px 20px rgba(138, 91, 210, 0.3), /* Slight purple glow */
+    0px 5px 15px rgba(90, 178, 255, 0.2);  /* Soft blue glow */
   color: var(--Neutral-600, #6f6c90);
   font-feature-settings:
     "liga" off,
@@ -216,6 +222,14 @@ button svg {
   line-height: 25px;
   margin-left: auto;
   word-break: break-all;
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Smooth transition for hover effect */
+}
+
+.bot-chat:hover {
+  transform: translateY(-5px); /* Subtle lift effect */
+  box-shadow:
+    0px 15px 30px rgba(138, 91, 210, 0.5), /* Enhanced purple glow */
+    0px 10px 20px rgba(90, 178, 255, 0.4); /* Enhanced blue glow */
 }
 #bottom {
   min-height: 1px;
@@ -401,6 +415,84 @@ button svg {
   border: 1px solid #e0e0e0;
   background: #f5f5f5;
 }
+#inner-chat-loader{
+  display : none;
+}
+#chat-loader{
+  display : none;
+}
+.loader {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-block;
+  border-top: 4px solid #0078d4;
+  border-right: 4px solid transparent;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+.loader::after {
+  content: '';  
+  box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border-bottom: 4px solid #8a5bd2;
+  border-left: 4px solid transparent ;
+}
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+} 
+.chat-loader{
+  max-width: 50%;
+  min-width : 120px;
+  min-height : 80px;
+  /*padding-right: 30px;*/
+  justify-content: center;
+  align-items: center;
+  border-radius: 23.75px;
+  border: 0.99px solid #f09ffd;
+  background: radial-gradient(
+      70.71% 70.71% at 50% 50%,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0) 100%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0.08) 100%
+    ),
+    #fff;
+  box-shadow:
+    0px 7.917px 39.583px -19.792px rgba(255, 255, 255, 0.2),
+    0.99px 0.99px 0px 0px rgba(255, 255, 255, 0.08) inset,
+    0px 0px 0px 0.99px rgba(255, 255, 255, 0.06) inset;
+  color: var(--Neutral-600, #6f6c90);
+  font-feature-settings:
+    "liga" off,
+    "clig" off;
+  font-family: "DM Sans";
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 25px;
+  margin-left: auto;
+  word-break: break-all;
+}
+@keyframes l5 {
+    0%  {box-shadow: 20px 0 #000, -20px 0 #0002;background: #000 }
+    33% {box-shadow: 20px 0 #000, -20px 0 #0002;background: #0002}
+    66% {box-shadow: 20px 0 #0002,-20px 0 #000; background: #0002}
+    100%{box-shadow: 20px 0 #0002,-20px 0 #000; background: #000 }
+}
 @media screen and (min-width: 600px) {
   #input-container {
     width: 430px;
@@ -411,5 +503,31 @@ button svg {
     width: 800px;
     margin-right: auto;
     margin-left: auto;
+  }
+}
+.spinner {
+  margin-left : auto;
+  margin-right : auto;
+  background-image: linear-gradient(rgb(186, 66, 255) 35%,rgb(0, 225, 255));
+  width: 60px;
+  height: 60px;
+  animation: spinning82341 1.7s linear infinite;
+  text-align: center;
+  border-radius: 50px;
+  filter: blur(1px);
+  box-shadow: 0px -5px 20px 0px #8A5BD2, 0px 5px 20px 0px #5AB2FF;
+}
+
+.spinner1 {
+  background-color: white ;
+  width: 60px;
+  height: 60px;
+  border-radius: 50px;
+  filter: blur(10px);
+}
+
+@keyframes spinning82341 {
+  to {
+    transform: rotate(360deg);
   }
 }
